@@ -1,0 +1,6 @@
+{
+  "name": "Pravibe Smarttech",
+  "description": "An AI-first creative agency in Jayanagar 4th Block, Bengaluru, specialising in cinematic AI video, Meta ads, WhatsApp CRM, AI agents, brand design, and social media.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
