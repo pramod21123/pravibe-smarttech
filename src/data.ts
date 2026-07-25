@@ -132,89 +132,146 @@ export const SERVICES: Service[] = [
       'Analyze data monthly to double down on high-performing formats.'
     ],
     whoItIsFor: 'For busy founders and marketing teams who want a flawless, high-authority, and active social media presence without the stress of managing it daily in-house.'
+  },
+  {
+    id: 'website-development',
+    slug: 'service-website-development',
+    title: 'Website Development',
+    shortDesc: 'High-converting landing page designs and custom multipage website experiences built for speed and mobile lead capture.',
+    longDesc: 'A great campaign requires a high-performance destination. We build lightning-fast, conversion-focused landing page layouts and custom multipage website platforms tailored for modern brands. Designed from the ground up to captivate visitors, load in under a second, showcase high-resolution media, and seamlessly capture inbound leads straight into your CRM or WhatsApp automations.',
+    icon: 'Globe',
+    features: [
+      'Custom landing page layouts engineered specifically for high Meta & Google ad conversion.',
+      'Scalable multipage website architecture with modern React, Tailwind CSS, and SEO optimization.',
+      'Seamless integration with WhatsApp CRM, lead capture webhooks, and analytics tracking.',
+      'Ultra-responsive desktop and mobile performance loading in under 1 second.'
+    ],
+    process: [
+      'UX Wireframing & Conversion Architecture mapping based on your target campaign.',
+      'High-fidelity UI visual design and interactive desktop/mobile prototype.',
+      'Frontend development with clean, accessible code and smooth micro-animations.',
+      'Webhook, CRM, and WhatsApp chat widget integration for instant lead capture.',
+      'Global CDN deployment and real-time speed & mobile responsiveness testing.'
+    ],
+    whoItIsFor: 'Designed for businesses looking to upgrade from sluggish traditional templates to high-impact landing page and multipage website experiences that convert ad traffic into paying customers.'
   }
 ];
+
+/**
+ * Transforms any image URL (Google Drive, Unsplash, etc.) into a lightweight, fast-loading,
+ * CDN-optimized thumbnail URL so high-quality blog images load instantly instead of downloading multi-megabyte raw files.
+ */
+export function getOptimizedImageUrl(url: string, width = 800): string {
+  if (!url) return '';
+
+  // Handle Google Drive file links
+  if (url.includes('googleusercontent.com') || url.includes('drive.google.com')) {
+    let fileId = '';
+    const dMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (dMatch && dMatch[1]) {
+      fileId = dMatch[1];
+    } else {
+      const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
+      if (idMatch && idMatch[1]) {
+        fileId = idMatch[1];
+      }
+    }
+
+    if (fileId) {
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${width}`;
+    }
+  }
+
+  // Handle Unsplash image links
+  if (url.includes('images.unsplash.com')) {
+    if (!url.includes('auto=format')) {
+      return `${url}&auto=format&w=${width}&q=80`;
+    }
+  }
+
+  return url;
+}
 
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
     id: 'prompt-to-film',
     title: 'Prompt-to-Film: How One Line of Text Becomes a Cinematic Launch Campaign',
     category: 'AI Video',
-    photoUrl: 'https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=1000&q=80',
+    photoUrl: 'https://drive.google.com/thumbnail?id=1XgoUVLxdK0jNnro7r_zHMnK45Xny876M&sz=w1000',
     excerpt: 'Step behind the curtain of our advanced AI production pipeline. Discover how we turn brief copy prompts into high-end cinematic advertising films.',
     readTime: '6 min read',
     date: 'July 14, 2026',
-    author: 'Pravibe Studio'
+    author: 'Pramod Shetty'
   },
   {
     id: 'ai-walkthroughs-prelaunch',
     title: 'Why AI Films Are Replacing Sample Flat Walkthroughs in Pre-Launch Marketing',
     category: 'Real Estate',
-    photoUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80',
+    photoUrl: 'https://drive.google.com/thumbnail?id=1apX9M8EiNpm_tDXCOh1g2DECLuIP7kyC&sz=w800',
     excerpt: 'Traditional 3D renderings are slow and lack emotional resonance. Here is how real estate developers are generating bookings before laying a single brick.',
     readTime: '5 min read',
     date: 'July 10, 2026',
-    author: 'Pravibe Studio'
+    author: 'Pramod Shetty'
   },
   {
     id: 'crop-nutrition-video',
     title: 'Selling Crop Nutrition on Video: What Actually Converts Modern Farmers',
     category: 'Agriculture',
-    photoUrl: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&q=80',
+    photoUrl: 'https://drive.google.com/thumbnail?id=1FQA7I8PGXDwt_Z-mmSOThdoQGyU8NVPG&sz=w800',
     excerpt: 'How we helped agricultural brands bypass geographic challenges to build high-converting, local-language video campaigns explaining complex nutrition benefits.',
     readTime: '7 min read',
     date: 'July 05, 2026',
-    author: 'Pravibe Studio'
+    author: 'Pramod Shetty'
   },
   {
     id: 'meta-click-to-whatsapp',
     title: 'From Meta Click to WhatsApp Conversation in 60 Seconds Flat',
     category: 'Automation',
-    photoUrl: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80',
+    photoUrl: 'https://drive.google.com/thumbnail?id=1B_q8tfXBB4-A3sxJ9c69omCOmpBBEfkn&sz=w800',
     excerpt: 'Delayed lead follow-up is the silent killer of ad budgets. Read our blueprint for building automated chat loops that qualify leads instantly.',
     readTime: '4 min read',
     date: 'June 28, 2026',
-    author: 'Pravibe Studio'
+    author: 'Pramod Shetty'
   },
   {
     id: 'shelf-appeal-feed',
     title: 'Shelf Appeal in the Feed: Designing Food Content That Stops the Scroll',
     category: 'Consumer Foods',
-    photoUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&q=80',
+    photoUrl: 'https://drive.google.com/thumbnail?id=19F3Z0WsIBeKjwSa5cBHumhSOGhUwwP9N&sz=w800',
     excerpt: 'FMCG and consumer snack brands must command attention on digital screens. Here is how we design packaging and content that drives grocery store demand.',
     readTime: '6 min read',
     date: 'June 20, 2026',
-    author: 'Pravibe Studio'
+    author: 'Pramod Shetty'
   },
   {
     id: 'cost-traditional-vs-ai',
     title: 'The Real Cost of a Traditional Video Shoot (And What Replaces It)',
     category: 'Marketing',
-    photoUrl: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&q=80',
+    photoUrl: 'https://drive.google.com/thumbnail?id=1UCDi-NqAe5ymXUOVElZoJ-gC3UMAyvyK&sz=w800',
     excerpt: 'A detailed cost breakdown of model casting, locations, transport, and equipment compared to a streamlined AI-first production studio pipeline.',
     readTime: '5 min read',
     date: 'June 15, 2026',
-    author: 'Pravibe Studio'
+    author: 'Pramod Shetty'
   },
   {
     id: 'drone-vs-ai-flythroughs',
     title: 'Drone Footage vs. AI-Generated Flythroughs: Which Sells Plots Faster?',
     category: 'Real Estate',
-    photoUrl: 'https://images.unsplash.com/photo-1508873696983-2df519f0397e?w=800&q=80',
+    photoUrl: 'https://drive.google.com/thumbnail?id=1bX7RackZNugPjU9A8VcQFXIb-YtRaETl&sz=w800',
     excerpt: 'Drone shots are perfect for showing empty soil, but AI-generated flythroughs show the luxury community that will exist. Here is how to combine both.',
     readTime: '5 min read',
     date: 'June 08, 2026',
-    author: 'Pravibe Studio'
+    author: 'Pramod Shetty'
   },
   {
     id: 'real-estate-launch-film-length',
     title: 'How Long Should a Real Estate Launch Film Actually Be?',
     category: 'Real Estate',
-    photoUrl: 'https://images.unsplash.com/photo-1511649475100-311f1363095c?w=800&q=80',
+    photoUrl: 'https://drive.google.com/thumbnail?id=1xUZJEgtBWmESHLpeAyh8qBESUKBqPZoI&sz=w800',
     excerpt: 'Analyzing viewer retention statistics on Meta ads. Why short, emotionally intense AI cinematic films are driving 3x more form completions than 5-minute epics.',
     readTime: '4 min read',
     date: 'May 30, 2026',
-    author: 'Pravibe Studio'
+    author: 'Pramod Shetty'
   }
 ];
 

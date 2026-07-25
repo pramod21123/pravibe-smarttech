@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivePage, BlogArticle } from '../types';
-import { BLOG_ARTICLES } from '../data';
+import { BLOG_ARTICLES, getOptimizedImageUrl } from '../data';
 import { Calendar, Clock, ArrowLeft, ChevronRight, User, ArrowUpRight } from 'lucide-react';
 
 interface BlogDetailViewProps {
@@ -300,8 +300,8 @@ export default function BlogDetailView({ articleSlug, setActivePage }: BlogDetai
           {/* Main Featured Photo */}
           <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-white/5 border border-white/10 shadow-2xl relative">
             <img
-              src={article.photoUrl}
-              alt={article.id === 'prompt-to-film' ? "Illustration of a person and an AI robot shaking hands through a computer screen, representing human and AI collaboration." : article.title}
+              src={getOptimizedImageUrl(article.photoUrl, 1200)}
+              alt={article.title}
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover"
             />
@@ -393,7 +393,7 @@ export default function BlogDetailView({ articleSlug, setActivePage }: BlogDetai
                 <div>
                   <div className="aspect-[16/9] w-full relative overflow-hidden bg-white/5 border-b border-white/5">
                     <img
-                      src={art.photoUrl}
+                      src={getOptimizedImageUrl(art.photoUrl, 800)}
                       alt={art.title}
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"

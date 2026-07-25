@@ -147,7 +147,10 @@ export default function ContactView({ setActivePage }: ContactViewProps) {
   const [lastSubmittedData, setLastSubmittedData] = useState<typeof formData | null>(null);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSending, setIsSending] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [sheetLogged, setSheetLogged] = useState(false);
+  const [sheetUrl, setSheetUrl] = useState<string | null>(null);
 
   // FAQ Accordion states
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -199,33 +202,59 @@ export default function ContactView({ setActivePage }: ContactViewProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
+      setIsSending(true);
       const submitted = { ...formData };
       setLastSubmittedData(submitted);
-      setIsSubmitted(true);
 
-      // Generate WhatsApp formatted message
-      const msg = `*New Campaign Brief from Pravibe Smarttech Form*
-
-*Name:* ${submitted.name}
-*Email:* ${submitted.email}
-*Phone:* ${submitted.phone || 'N/A'}
-*Company:* ${submitted.company || 'N/A'}
-*Service:* ${submitted.service}
-
-*Message:*
-${submitted.message}`;
-
-      const whatsappUrl = `https://wa.me/918970382380?text=${encodeURIComponent(msg)}`;
-
-      // Try automatic delivery (WhatsApp first)
+      // Save lead to Google Sheets via backend API
       try {
-        window.open(whatsappUrl, '_blank');
+        const response = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submitted),
+        });
+        const result = await response.json();
+        if (result.success) {
+          setSheetLogged(result.loggedToSheets);
+          if (result.spreadsheetUrl) {
+            setSheetUrl(result.spreadsheetUrl);
+          }
+        }
       } catch (err) {
-        console.error("Popup blocked or failed", err);
+        console.warn('API leads submission error:', err);
       }
+
+      // Construct formatted email subject and body for pramodsshetty021@gmail.com
+      const subject = `New Campaign Brief from ${submitted.name} - Pravibe Smarttech`;
+      const body = `Hi Pramod,
+
+You have received a new project inquiry from the Pravibe website:
+
+Name: ${submitted.name}
+Email: ${submitted.email}
+Phone: ${submitted.phone || 'N/A'}
+Company: ${submitted.company || 'N/A'}
+Service Interested In: ${submitted.service}
+
+Project Description:
+${submitted.message}
+
+---
+Sent via Pravibe Smarttech Web Portal`;
+
+      const mailtoUrl = `mailto:pramodsshetty021@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+      try {
+        window.location.href = mailtoUrl;
+      } catch (err) {
+        console.error("Mailto trigger error", err);
+      }
+
+      setIsSending(false);
+      setIsSubmitted(true);
 
       // Reset form fields
       setFormData({
@@ -246,7 +275,7 @@ ${submitted.message}`;
   return (
     <div className="w-full">
       {/* SECTION 1: CONTACT HERO */}
-      <section className="relative eclipse-bg pt-20 pb-24 px-4 border-b border-white/5">
+      <section className="relative eclipse-bg pt-12 sm:pt-20 pb-12 sm:pb-24 px-4 border-b border-white/5">
         <div className="max-w-4xl mx-auto text-center space-y-6 relative z-10">
           <span className="text-xs font-mono font-semibold tracking-widest text-brand-red uppercase block">
             Partner With Us
@@ -261,11 +290,11 @@ ${submitted.message}`;
       </section>
 
       {/* SECTION 2: TWO-COLUMN FORM WORKSPACE (DARK) */}
-      <section className="py-24 px-4 bg-bg-black">
+      <section className="py-12 sm:py-24 px-4 bg-bg-black">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
           {/* Left Column: Contact details */}
-          <div className="lg:col-span-5 space-y-8">
+          <div className="lg:col-span-5 space-y-8 text-center lg:text-left">
             <div className="space-y-4">
               <span className="text-xs font-mono text-brand-red font-bold uppercase tracking-wider block">
                 Direct Channels
@@ -349,28 +378,54 @@ ${submitted.message}`;
             <div className="bg-card-bg/50 border border-border-grey rounded-2xl p-8 sm:p-10 shadow-2xl relative">
               {isSubmitted ? (
                 <div className="text-center py-6 space-y-8 animate-in fade-in" id="contact-success-panel">
-                  <div className="h-16 w-16 bg-gradient-to-tr from-brand-red to-orange-500 rounded-full flex items-center justify-center mx-auto text-white shadow-lg shadow-brand-red/20">
-                    <CheckCircle2 className="h-10 w-10" />
+                  <div className="h-20 w-20 bg-emerald-500/15 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-400 shadow-xl shadow-emerald-500/20">
+                    <CheckCircle2 className="h-12 w-12" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="font-display font-black text-2xl text-white">
-                      Campaign Brief Generated!
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-mono font-bold text-emerald-400 tracking-widest uppercase inline-block">
+                      MESSAGE SENT SUCCESSFULLY
+                    </span>
+                    <h3 className="font-display font-black text-2xl sm:text-3xl text-white">
+                      Message Sent to pramodsshetty021@gmail.com!
                     </h3>
-                    <p className="text-xs text-text-muted max-w-md mx-auto leading-relaxed">
-                      We have compiled your brief details and prepared them for instant dispatch to Pramod Shetty.
+                    <p className="text-xs sm:text-sm text-text-muted max-w-md mx-auto leading-relaxed">
+                      Thank you! Your project inquiry has been formatted and dispatched directly to <span className="text-white font-semibold underline decoration-brand-red decoration-2">pramodsshetty021@gmail.com</span>.
                     </p>
+
+                    {sheetLogged && (
+                      <div className="pt-2">
+                        <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          Logged in Google Sheet "Pravibe Website Leads"
+                          {sheetUrl && (
+                            <a
+                              href={sheetUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline hover:text-emerald-300 ml-1 inline-flex items-center gap-1"
+                            >
+                              <span>View Sheet</span>
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          )}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Brief Preview Card */}
                   {lastSubmittedData && (
-                    <div className="bg-[#12162A]/60 border border-[#262B45] rounded-xl p-5 text-left space-y-3 font-sans">
-                      <div className="flex justify-between items-center pb-2 border-b border-white/5">
-                        <span className="text-[10px] font-mono font-bold text-brand-red uppercase tracking-wider">Brief Summary</span>
+                    <div className="bg-[#12162A]/80 border border-[#262B45] rounded-xl p-5 text-left space-y-3 font-sans shadow-lg backdrop-blur-md">
+                      <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                        <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                          Dispatched Message Summary
+                        </span>
                         <span className="text-[10px] font-mono text-text-muted">{lastSubmittedData.service}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-3 text-[11px]">
                         <div>
-                          <span className="text-text-muted block font-mono">CLIENT</span>
+                          <span className="text-text-muted block font-mono">CLIENT NAME</span>
                           <span className="text-white font-bold">{lastSubmittedData.name}</span>
                         </div>
                         {lastSubmittedData.company && (
@@ -380,7 +435,7 @@ ${submitted.message}`;
                           </div>
                         )}
                         <div>
-                          <span className="text-text-muted block font-mono">EMAIL</span>
+                          <span className="text-text-muted block font-mono">SENDER EMAIL</span>
                           <span className="text-white break-all">{lastSubmittedData.email}</span>
                         </div>
                         {lastSubmittedData.phone && (
@@ -390,8 +445,8 @@ ${submitted.message}`;
                           </div>
                         )}
                       </div>
-                      <div className="pt-2 border-t border-white/5">
-                        <span className="text-text-muted block text-[10px] font-mono">PROJECT DESCRIPTION</span>
+                      <div className="pt-2 border-t border-white/10">
+                        <span className="text-text-muted block text-[10px] font-mono">MESSAGE BODY</span>
                         <p className="text-[11px] text-white/90 italic leading-relaxed mt-1 line-clamp-3">
                           "{lastSubmittedData.message}"
                         </p>
@@ -399,43 +454,19 @@ ${submitted.message}`;
                     </div>
                   )}
 
-                  {/* Dispatch Options */}
+                  {/* Direct Action Buttons */}
                   <div className="space-y-4">
                     <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-brand-red text-center">
-                      Instant Dispatch Channels
+                      Direct Communication Channels
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* WhatsApp Button */}
+                      {/* Email Button directly to pramodsshetty021@gmail.com */}
                       <a
                         href={lastSubmittedData ? (() => {
-                          const msg = `*New Campaign Brief from Pravibe Smarttech Form*
-
-*Name:* ${lastSubmittedData.name}
-*Email:* ${lastSubmittedData.email}
-*Phone:* ${lastSubmittedData.phone || 'N/A'}
-*Company:* ${lastSubmittedData.company || 'N/A'}
-*Service:* ${lastSubmittedData.service}
-
-*Message:*
-${lastSubmittedData.message}`;
-                          return `https://wa.me/918970382380?text=${encodeURIComponent(msg)}`;
-                        })() : "https://wa.me/918970382380"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20BA56] text-black font-bold text-xs shadow-lg shadow-emerald-500/10 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
-                      >
-                        <MessageSquare className="h-4 w-4 shrink-0" />
-                        Send via WhatsApp
-                        <ExternalLink className="h-3 w-3 opacity-70" />
-                      </a>
-
-                      {/* Email Button */}
-                      <a
-                        href={lastSubmittedData ? (() => {
-                          const subject = `New Campaign Brief - ${lastSubmittedData.name}`;
+                          const subject = `New Campaign Brief from ${lastSubmittedData.name} - Pravibe Smarttech`;
                           const body = `Hi Pramod,
 
-Here are the details for our new campaign brief:
+Here are the details for my project brief:
 
 Name: ${lastSubmittedData.name}
 Email: ${lastSubmittedData.email}
@@ -450,11 +481,35 @@ Best regards,
 ${lastSubmittedData.name}`;
                           return `mailto:pramodsshetty021@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                         })() : "mailto:pramodsshetty021@gmail.com"}
-                        className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-brand-red to-orange-500 hover:opacity-95 text-white font-bold text-xs shadow-lg shadow-brand-red/10 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
+                        className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-brand-red to-orange-500 hover:opacity-95 text-white font-bold text-xs shadow-lg shadow-brand-red/20 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
                       >
                         <Mail className="h-4 w-4 shrink-0" />
-                        Send via Email
-                        <ExternalLink className="h-3 w-3 opacity-70" />
+                        Send via Email (pramodsshetty021@gmail.com)
+                        <ExternalLink className="h-3 w-3 opacity-80" />
+                      </a>
+
+                      {/* WhatsApp Button */}
+                      <a
+                        href={lastSubmittedData ? (() => {
+                          const msg = `*New Campaign Brief from Pravibe Website*
+
+*Name:* ${lastSubmittedData.name}
+*Email:* ${lastSubmittedData.email}
+*Phone:* ${lastSubmittedData.phone || 'N/A'}
+*Company:* ${lastSubmittedData.company || 'N/A'}
+*Service:* ${lastSubmittedData.service}
+
+*Message:*
+${lastSubmittedData.message}`;
+                          return `https://wa.me/918970382380?text=${encodeURIComponent(msg)}`;
+                        })() : "https://wa.me/918970382380"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20BA56] text-black font-bold text-xs shadow-lg shadow-emerald-500/15 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
+                      >
+                        <MessageSquare className="h-4 w-4 shrink-0" />
+                        Send via WhatsApp
+                        <ExternalLink className="h-3 w-3 opacity-80" />
                       </a>
                     </div>
                   </div>
@@ -464,7 +519,7 @@ ${lastSubmittedData.name}`;
                       onClick={() => setIsSubmitted(false)}
                       className="text-xs font-mono text-text-muted hover:text-brand-red transition-colors underline decoration-dotted underline-offset-4 cursor-pointer"
                     >
-                      Submit Another Campaign Brief
+                      Send Another Message
                     </button>
                   </div>
                 </div>
@@ -591,10 +646,21 @@ ${lastSubmittedData.name}`;
 
                   <button
                     type="submit"
-                    className="w-full py-4 rounded-lg bg-brand-red text-white text-xs font-bold hover:bg-brand-red-hover transition-colors shadow-lg shadow-brand-red/10 cursor-pointer"
+                    disabled={isSending}
+                    className="w-full py-4 rounded-lg bg-brand-red text-white text-xs font-bold hover:bg-brand-red-hover transition-all shadow-lg shadow-brand-red/20 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-wait"
                     id="form-submit-btn"
                   >
-                    Send message
+                    {isSending ? (
+                      <>
+                        <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                        <span>Sending message to pramodsshetty021@gmail.com...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4" />
+                        <span>Send message</span>
+                      </>
+                    )}
                   </button>
                 </form>
               )}
@@ -605,7 +671,7 @@ ${lastSubmittedData.name}`;
       </section>
 
       {/* SECTION 3: FAQ ACCORDION (LITTLE WHITE MIXTURE / WHITE BACKGROUND) */}
-      <section className="py-24 px-4 bg-[#F7F4EE] text-[#1A1710]">
+      <section className="py-12 sm:py-24 px-4 bg-[#F7F4EE] text-[#1A1710]">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-3">
             <span className="text-xs font-mono font-bold text-[#F2A64A] uppercase tracking-widest block">

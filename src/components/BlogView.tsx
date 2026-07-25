@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ActivePage, BlogArticle } from '../types';
-import { BLOG_ARTICLES } from '../data';
+import { BLOG_ARTICLES, getOptimizedImageUrl } from '../data';
 import { Search, Filter, BookOpen, Clock, Calendar, ChevronRight } from 'lucide-react';
 
 interface BlogViewProps {
@@ -29,7 +29,7 @@ export default function BlogView({ setActivePage }: BlogViewProps) {
   return (
     <div className="w-full">
       {/* SECTION 1: BLOG HERO */}
-      <section className="relative eclipse-bg pt-20 pb-24 px-4 border-b border-white/5">
+      <section className="relative eclipse-bg pt-12 sm:pt-20 pb-12 sm:pb-24 px-4 border-b border-white/5">
         <div className="max-w-4xl mx-auto text-center space-y-6 relative z-10">
           <span className="text-xs font-mono font-semibold tracking-widest text-brand-red uppercase block">
             Pravibe Perspectives
@@ -80,7 +80,7 @@ export default function BlogView({ setActivePage }: BlogViewProps) {
       </section>
 
       {/* SECTION 3: ARTICLES GRID */}
-      <section className="py-24 px-4 bg-bg-black">
+      <section className="py-12 sm:py-24 px-4 bg-bg-black">
         <div className="max-w-7xl mx-auto space-y-16">
           {filteredArticles.length === 0 ? (
             <div className="text-center py-16 text-text-muted space-y-2">
@@ -109,8 +109,8 @@ export default function BlogView({ setActivePage }: BlogViewProps) {
                     {/* Photo Wrapper */}
                     <div className="aspect-[16/9] w-full relative overflow-hidden bg-white/5 border-b border-white/5">
                       <img
-                        src={art.photoUrl}
-                        alt={art.id === 'prompt-to-film' ? "Illustration of a person and an AI robot shaking hands through a computer screen, representing human and AI collaboration." : art.title}
+                        src={getOptimizedImageUrl(art.photoUrl, 800)}
+                        alt={art.title}
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
                         loading="lazy"

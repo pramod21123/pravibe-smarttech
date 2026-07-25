@@ -7,6 +7,7 @@ export type ActivePage =
   | 'service-ai-agents'
   | 'service-brand-design'
   | 'service-social-media'
+  | 'service-website-development'
   | 'blog'
   | 'about'
   | 'contact'

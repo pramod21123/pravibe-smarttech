@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Menu, X, ChevronDown, Sparkles, MessageSquare, Mail, MapPin } from 'lucide-react';
+import { Menu, X, ChevronDown, Sparkles } from 'lucide-react';
 import { ActivePage } from '../types';
 
 interface HeaderProps {
@@ -16,7 +16,7 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 120) {
+      if (window.scrollY > 50) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
@@ -41,46 +41,15 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
     { name: 'AI Agents & Automation', slug: 'service-ai-agents' as ActivePage },
     { name: 'Brand & Promo Design', slug: 'service-brand-design' as ActivePage },
     { name: 'Social Media Management', slug: 'service-social-media' as ActivePage },
+    { name: 'Website Development', slug: 'service-website-development' as ActivePage },
   ];
 
   return (
-    <header className="w-full z-40 transition-all duration-300">
-      {/* Top Utility Bar */}
-      <div className="bg-black/80 border-b border-white/5 py-2.5 px-4 text-xs font-medium tracking-wide text-text-muted transition-all duration-300">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-          <div className="flex items-center gap-1.5 justify-center">
-            <MapPin className="h-3.5 w-3.5 text-brand-red" />
-            <span>Jayanagar 4th Block, Bengaluru</span>
-          </div>
-          <div className="flex items-center gap-4 sm:gap-6 justify-center">
-            <a
-              href="mailto:pramodsshetty021@gmail.com"
-              className="flex items-center gap-1.5 hover:text-white transition-colors"
-              id="top-bar-email"
-            >
-              <Mail className="h-3.5 w-3.5 text-brand-red" />
-              <span>pramodsshetty021@gmail.com</span>
-            </a>
-            <a
-              href="https://wa.me/918970382380"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-brand-red hover:text-brand-red-hover font-bold transition-colors"
-              id="top-bar-whatsapp"
-            >
-              <MessageSquare className="h-3.5 w-3.5" />
-              <span>WhatsApp Us</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
+    <header className="sticky top-0 z-50 w-full transition-all duration-300 bg-[#0B0E1A]/85 backdrop-blur-xl border-b border-white/10 shadow-xl">
       {/* Main Navigation */}
       <nav
         className={`w-full transition-all duration-300 ${
-          isScrolled
-            ? 'sticky top-0 bg-[#0B0E1A]/95 backdrop-blur-md border-b border-border-grey shadow-lg py-4'
-            : 'relative bg-transparent py-6'
+          isScrolled ? 'py-3.5' : 'py-4 sm:py-5'
         }`}
         aria-label="Main Navigation"
       >
@@ -255,7 +224,7 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 text-text-grey hover:text-white focus:outline-none"
+            className="lg:hidden p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-text-grey hover:text-white focus:outline-none rounded-lg border border-white/10 bg-white/5"
             aria-label="Toggle mobile menu"
             id="mobile-menu-toggle"
           >
@@ -266,13 +235,13 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
         {/* Mobile Slide-down Menu */}
         {isMobileMenuOpen && (
           <div
-            className="lg:hidden w-full bg-[#0B0E1A] border-t border-border-grey px-4 py-6 flex flex-col gap-5 text-base font-medium text-text-grey animate-in fade-in slide-in-from-top-4"
+            className="lg:hidden w-full bg-[#0B0E1A]/98 backdrop-blur-xl border-t border-border-grey px-5 py-6 flex flex-col gap-4 text-base font-medium text-text-grey animate-in fade-in slide-in-from-top-4 shadow-2xl"
             id="mobile-menu-container"
           >
             <button
               onClick={() => navigateTo('home')}
-              className={`text-left py-2 hover:text-white ${
-                activePage === 'home' ? 'text-brand-red font-bold' : ''
+              className={`text-left min-h-[44px] flex items-center px-3 rounded-lg hover:bg-white/5 hover:text-white transition-colors ${
+                activePage === 'home' ? 'text-brand-red font-bold bg-white/5' : ''
               }`}
               id="mobile-nav-home"
             >
@@ -283,7 +252,7 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
             <div className="flex flex-col">
               <button
                 onClick={() => setIsServicesAccordionOpen(!isServicesAccordionOpen)}
-                className="flex items-center justify-between py-2 text-left hover:text-white"
+                className="flex items-center justify-between min-h-[44px] px-3 rounded-lg text-left hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
                 id="mobile-nav-services-trigger"
               >
                 <span>Services</span>
@@ -294,10 +263,10 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
                 />
               </button>
               {isServicesAccordionOpen && (
-                <div className="pl-4 flex flex-col gap-3 border-l border-brand-red/30 py-2 mt-1">
+                <div className="pl-4 flex flex-col gap-1 border-l border-brand-red/30 py-2 mt-1">
                   <button
                     onClick={() => navigateTo('services')}
-                    className="text-left text-sm py-1.5 font-bold text-brand-red"
+                    className="text-left text-sm min-h-[40px] flex items-center px-3 rounded-md font-bold text-brand-red hover:bg-white/5"
                     id="mobile-nav-services-all"
                   >
                     Services Overview &rarr;
@@ -306,7 +275,7 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
                     <button
                       key={srv.slug}
                       onClick={() => navigateTo(srv.slug)}
-                      className="text-left text-sm py-1.5 hover:text-white"
+                      className="text-left text-sm min-h-[40px] flex items-center px-3 rounded-md hover:bg-white/5 hover:text-white transition-colors"
                       id={`mobile-nav-link-${srv.slug}`}
                     >
                       {srv.name}
@@ -318,8 +287,8 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
 
             <button
               onClick={() => navigateTo('blog')}
-              className={`text-left py-2 hover:text-white ${
-                activePage === 'blog' || activePage.startsWith('blog-') ? 'text-brand-red font-bold' : ''
+              className={`text-left min-h-[44px] flex items-center px-3 rounded-lg hover:bg-white/5 hover:text-white transition-colors ${
+                activePage === 'blog' || activePage.startsWith('blog-') ? 'text-brand-red font-bold bg-white/5' : ''
               }`}
               id="mobile-nav-blog"
             >
@@ -327,8 +296,8 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
             </button>
             <button
               onClick={() => navigateTo('about')}
-              className={`text-left py-2 hover:text-white ${
-                activePage === 'about' ? 'text-brand-red font-bold' : ''
+              className={`text-left min-h-[44px] flex items-center px-3 rounded-lg hover:bg-white/5 hover:text-white transition-colors ${
+                activePage === 'about' ? 'text-brand-red font-bold bg-white/5' : ''
               }`}
               id="mobile-nav-about"
             >
@@ -336,17 +305,17 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
             </button>
 
             {/* CTA buttons */}
-            <div className="flex flex-col gap-3 pt-4 border-t border-white/5">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/10">
               <button
                 onClick={() => navigateTo('contact')}
-                className="w-full py-3 rounded-lg bg-brand-red text-white text-center font-bold hover:bg-brand-red-hover transition-colors shadow-md shadow-brand-red/10"
+                className="w-full min-h-[48px] py-3.5 rounded-xl bg-brand-red text-white text-center font-bold hover:bg-brand-red-hover transition-colors shadow-lg shadow-brand-red/15 cursor-pointer"
                 id="mobile-cta-demo"
               >
                 Get a free demo
               </button>
               <button
                 onClick={() => navigateTo('contact')}
-                className="w-full py-3 rounded-lg border border-white/20 text-white text-center font-bold hover:border-white hover:bg-white/5 transition-all"
+                className="w-full min-h-[48px] py-3.5 rounded-xl border border-white/20 text-white text-center font-bold hover:border-white hover:bg-white/5 transition-all cursor-pointer"
                 id="mobile-cta-contact"
               >
                 Contact us

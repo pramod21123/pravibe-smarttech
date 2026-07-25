@@ -58,6 +58,11 @@ export default function ServiceDetailView({ serviceSlug, setActivePage }: Servic
           { num: '100%', label: 'Active Pipeline', desc: 'Never miss a post with full-service automated, curated social scheduling.' },
           { num: '2.5x', label: 'Engagement Increase', desc: 'Average boost in audience likes, comments, and shares over 60 days.' }
         ];
+      case 'service-website-development':
+        return [
+          { num: '<1 Sec', label: 'Load Speed', desc: 'Ultra-fast landing page and multipage website performance for high retention.' },
+          { num: '+45%', label: 'Lead Conversion', desc: 'Higher visitor-to-lead conversion rate via optimized UI and integrated CRM.' }
+        ];
       default:
         return [
           { num: '100%', label: 'High Fidelity', desc: 'Premium creative delivery with zero administrative friction.' }
@@ -120,7 +125,7 @@ export default function ServiceDetailView({ serviceSlug, setActivePage }: Servic
       <section className="py-20 px-4 bg-bg-black border-t border-white/5">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Left Panel: Bullet Process steps */}
-          <div className="lg:col-span-7 space-y-8">
+          <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
             <h2 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight">
               Our Implementation Pipeline
             </h2>

@@ -25,7 +25,7 @@ export default function App() {
       const validRoutes: ActivePage[] = [
         'home', 'services', 'service-ai-video', 'service-meta-ads', 
         'service-whatsapp-crm', 'service-ai-agents', 'service-brand-design', 
-        'service-social-media', 'blog', 'about', 'contact',
+        'service-social-media', 'service-website-development', 'blog', 'about', 'contact',
         'blog-prompt-to-film', 'blog-ai-walkthroughs-prelaunch',
         'blog-crop-nutrition-video', 'blog-meta-click-to-whatsapp',
         'blog-shelf-appeal-feed', 'blog-cost-traditional-vs-ai',
@@ -83,6 +83,10 @@ export default function App() {
       case 'service-social-media':
         title = 'Social Media Management | Pravibe Smarttech';
         description = 'Full-service content scheduling, video script-writing, and audience engagement to turn social into a compounding asset.';
+        break;
+      case 'service-website-development':
+        title = 'Website Development | Pravibe Smarttech';
+        description = 'High-converting landing page layouts and custom multipage website experiences built for sub-second speed and lead capture.';
         break;
       case 'blog-prompt-to-film':
         title = 'Prompt-to-Film Pipeline | Pravibe Insights';
