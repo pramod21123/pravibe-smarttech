@@ -1,16 +1,23 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, Twitter, Youtube, Linkedin, Instagram, ArrowUpRight, MapPin, Mail, MessageSquare, Calendar, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { ActivePage } from '../types';
+import { getPagePath } from '../utils/routes';
 
 interface FooterProps {
-  setActivePage: (page: ActivePage) => void;
+  setActivePage?: (page: ActivePage) => void;
 }
 
 export default function Footer({ setActivePage }: FooterProps) {
+  const navigate = useNavigate();
   const navigateTo = (page: ActivePage) => {
-    setActivePage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (setActivePage) {
+      setActivePage(page);
+    } else {
+      navigate(getPagePath(page));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const servicesListLeft = [

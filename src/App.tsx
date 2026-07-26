@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
@@ -9,40 +10,49 @@ import BlogDetailView from './components/BlogDetailView';
 import BlogView from './components/BlogView';
 import AboutView from './components/AboutView';
 import ContactView from './components/ContactView';
+import NotFoundView from './components/NotFoundView';
 import { ActivePage } from './types';
+import { getActivePageFromPath, getPagePath } from './utils/routes';
 
-export default function App() {
-  // Simple state-based routing (without hash routing)
-  const [activePage, setActivePage] = useState<ActivePage>(() => {
-    const saved = sessionStorage.getItem('activePage');
-    return (saved as ActivePage) || 'home';
-  });
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
-  // Clear hash on mount if present, to keep URLs clean and migrate legacy links
+function ServiceRouteWrapper({ handlePageChange }: { handlePageChange: (page: ActivePage) => void }) {
+  const { serviceId } = useParams<{ serviceId: string }>();
+  const serviceSlug = `service-${serviceId}` as ActivePage;
+  return <ServiceDetailView serviceSlug={serviceSlug} setActivePage={handlePageChange} />;
+}
+
+function BlogRouteWrapper({ handlePageChange }: { handlePageChange: (page: ActivePage) => void }) {
+  const { blogId } = useParams<{ blogId: string }>();
+  const articleSlug = `blog-${blogId}`;
+  return <BlogDetailView articleSlug={articleSlug} setActivePage={handlePageChange} />;
+}
+
+function AppContent() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const activePage = getActivePageFromPath(location.pathname);
+
+  // Clear hash on mount if present, to migrate legacy links
   useEffect(() => {
     if (window.location.hash) {
       const oldHash = window.location.hash.replace('#/', '');
-      const validRoutes: ActivePage[] = [
-        'home', 'services', 'service-ai-video', 'service-meta-ads', 
-        'service-whatsapp-crm', 'service-ai-agents', 'service-brand-design', 
-        'service-social-media', 'service-website-development', 'blog', 'about', 'contact',
-        'blog-prompt-to-film', 'blog-ai-walkthroughs-prelaunch',
-        'blog-crop-nutrition-video', 'blog-meta-click-to-whatsapp',
-        'blog-shelf-appeal-feed', 'blog-cost-traditional-vs-ai',
-        'blog-drone-vs-ai-flythroughs', 'blog-real-estate-launch-film-length'
-      ];
-      if (validRoutes.includes(oldHash as ActivePage)) {
-        setActivePage(oldHash as ActivePage);
-        sessionStorage.setItem('activePage', oldHash);
+      if (oldHash) {
+        const targetPath = getPagePath(oldHash as ActivePage);
+        navigate(targetPath, { replace: true });
       }
-      // Remove hash from address bar
-      window.history.replaceState(null, '', window.location.pathname + window.location.search);
     }
-  }, []);
+  }, [navigate]);
 
   const handlePageChange = (page: ActivePage) => {
-    setActivePage(page);
-    sessionStorage.setItem('activePage', page);
+    const targetPath = getPagePath(page);
+    navigate(targetPath);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -177,51 +187,43 @@ export default function App() {
     }
   }, [activePage]);
 
-  // View router selection mapper
-  const renderActiveView = () => {
-    if (activePage.startsWith('service-')) {
-      return (
-        <ServiceDetailView
-          serviceSlug={activePage}
-          setActivePage={handlePageChange}
-        />
-      );
-    }
-
-    if (activePage.startsWith('blog-')) {
-      return (
-        <BlogDetailView
-          articleSlug={activePage}
-          setActivePage={handlePageChange}
-        />
-      );
-    }
-
-    switch (activePage) {
-      case 'home':
-        return <HomeView setActivePage={handlePageChange} />;
-      case 'services':
-        return <ServicesView setActivePage={handlePageChange} />;
-      case 'blog':
-        return <BlogView setActivePage={handlePageChange} />;
-      case 'about':
-        return <AboutView setActivePage={handlePageChange} />;
-      case 'contact':
-        return <ContactView setActivePage={handlePageChange} />;
-      default:
-        return <HomeView setActivePage={handlePageChange} />;
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-[#0B0E1A] text-white overflow-x-hidden antialiased">
+      <ScrollToTop />
       {/* Universal header layout */}
       <Header activePage={activePage} setActivePage={handlePageChange} />
 
       {/* Main interactive SPA stage */}
       <main className="flex-grow w-full relative">
         <div className="w-full">
-          {renderActiveView()}
+          <Routes>
+            <Route path="/" element={<HomeView setActivePage={handlePageChange} />} />
+            <Route path="/services" element={<ServicesView setActivePage={handlePageChange} />} />
+            <Route path="/services/ai-video" element={<ServiceDetailView serviceSlug="service-ai-video" setActivePage={handlePageChange} />} />
+            <Route path="/services/meta-ads" element={<ServiceDetailView serviceSlug="service-meta-ads" setActivePage={handlePageChange} />} />
+            <Route path="/services/whatsapp-crm" element={<ServiceDetailView serviceSlug="service-whatsapp-crm" setActivePage={handlePageChange} />} />
+            <Route path="/services/ai-agents" element={<ServiceDetailView serviceSlug="service-ai-agents" setActivePage={handlePageChange} />} />
+            <Route path="/services/brand-design" element={<ServiceDetailView serviceSlug="service-brand-design" setActivePage={handlePageChange} />} />
+            <Route path="/services/social-media" element={<ServiceDetailView serviceSlug="service-social-media" setActivePage={handlePageChange} />} />
+            <Route path="/services/website-development" element={<ServiceDetailView serviceSlug="service-website-development" setActivePage={handlePageChange} />} />
+            <Route path="/services/:serviceId" element={<ServiceRouteWrapper handlePageChange={handlePageChange} />} />
+
+            <Route path="/blog" element={<BlogView setActivePage={handlePageChange} />} />
+            <Route path="/blog/prompt-to-film" element={<BlogDetailView articleSlug="blog-prompt-to-film" setActivePage={handlePageChange} />} />
+            <Route path="/blog/ai-walkthroughs-prelaunch" element={<BlogDetailView articleSlug="blog-ai-walkthroughs-prelaunch" setActivePage={handlePageChange} />} />
+            <Route path="/blog/crop-nutrition-video" element={<BlogDetailView articleSlug="blog-crop-nutrition-video" setActivePage={handlePageChange} />} />
+            <Route path="/blog/meta-click-to-whatsapp" element={<BlogDetailView articleSlug="blog-meta-click-to-whatsapp" setActivePage={handlePageChange} />} />
+            <Route path="/blog/shelf-appeal-feed" element={<BlogDetailView articleSlug="blog-shelf-appeal-feed" setActivePage={handlePageChange} />} />
+            <Route path="/blog/cost-traditional-vs-ai" element={<BlogDetailView articleSlug="blog-cost-traditional-vs-ai" setActivePage={handlePageChange} />} />
+            <Route path="/blog/drone-vs-ai-flythroughs" element={<BlogDetailView articleSlug="blog-drone-vs-ai-flythroughs" setActivePage={handlePageChange} />} />
+            <Route path="/blog/real-estate-launch-film-length" element={<BlogDetailView articleSlug="blog-real-estate-launch-film-length" setActivePage={handlePageChange} />} />
+            <Route path="/blog/:blogId" element={<BlogRouteWrapper handlePageChange={handlePageChange} />} />
+
+            <Route path="/about" element={<AboutView setActivePage={handlePageChange} />} />
+            <Route path="/contact" element={<ContactView setActivePage={handlePageChange} />} />
+
+            <Route path="*" element={<NotFoundView setActivePage={handlePageChange} />} />
+          </Routes>
         </div>
       </main>
 
@@ -231,5 +233,13 @@ export default function App() {
       {/* Persistent floating WhatsApp connection */}
       <WhatsAppButton />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   );
 }

@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Menu, X, ChevronDown, Sparkles } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ActivePage } from '../types';
+import { getActivePageFromPath, getPagePath } from '../utils/routes';
 
 interface HeaderProps {
-  activePage: ActivePage;
-  setActivePage: (page: ActivePage) => void;
+  activePage?: ActivePage;
+  setActivePage?: (page: ActivePage) => void;
 }
 
-export default function Header({ activePage, setActivePage }: HeaderProps) {
+export default function Header({ activePage: propActivePage, setActivePage }: HeaderProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const activePage = propActivePage || getActivePageFromPath(location.pathname);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isServicesAccordionOpen, setIsServicesAccordionOpen] = useState(false);
@@ -27,8 +33,12 @@ export default function Header({ activePage, setActivePage }: HeaderProps) {
   }, []);
 
   const navigateTo = (page: ActivePage) => {
-    setActivePage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (setActivePage) {
+      setActivePage(page);
+    } else {
+      navigate(getPagePath(page));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     setIsMobileMenuOpen(false);
     setIsServicesAccordionOpen(false);
     setIsMegaMenuVisible(false);

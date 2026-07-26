@@ -149,8 +149,6 @@ export default function ContactView({ setActivePage }: ContactViewProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSending, setIsSending] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [sheetLogged, setSheetLogged] = useState(false);
-  const [sheetUrl, setSheetUrl] = useState<string | null>(null);
 
   // FAQ Accordion states
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -209,48 +207,21 @@ export default function ContactView({ setActivePage }: ContactViewProps) {
       const submitted = { ...formData };
       setLastSubmittedData(submitted);
 
-      // Save lead to Google Sheets via backend API
+      const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzizZgMOKEfUB_1Q9rdn4DKiqN6zs8nNqSUErf25KjEZ5-1bVtR6tmaCnW_QuLM5_84vw/exec';
+
       try {
-        const response = await fetch('/api/leads', {
+        await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(submitted),
+          mode: 'no-cors',
+          body: JSON.stringify({
+            name: submitted.name,
+            email: submitted.email,
+            phone: submitted.phone,
+            message: submitted.message,
+          }),
         });
-        const result = await response.json();
-        if (result.success) {
-          setSheetLogged(result.loggedToSheets);
-          if (result.spreadsheetUrl) {
-            setSheetUrl(result.spreadsheetUrl);
-          }
-        }
       } catch (err) {
-        console.warn('API leads submission error:', err);
-      }
-
-      // Construct formatted email subject and body for pramodsshetty021@gmail.com
-      const subject = `New Campaign Brief from ${submitted.name} - Pravibe Smarttech`;
-      const body = `Hi Pramod,
-
-You have received a new project inquiry from the Pravibe website:
-
-Name: ${submitted.name}
-Email: ${submitted.email}
-Phone: ${submitted.phone || 'N/A'}
-Company: ${submitted.company || 'N/A'}
-Service Interested In: ${submitted.service}
-
-Project Description:
-${submitted.message}
-
----
-Sent via Pravibe Smarttech Web Portal`;
-
-      const mailtoUrl = `mailto:pramodsshetty021@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-      try {
-        window.location.href = mailtoUrl;
-      } catch (err) {
-        console.error("Mailto trigger error", err);
+        console.warn('Apps Script submission error:', err);
       }
 
       setIsSending(false);
@@ -386,31 +357,11 @@ Sent via Pravibe Smarttech Web Portal`;
                       MESSAGE SENT SUCCESSFULLY
                     </span>
                     <h3 className="font-display font-black text-2xl sm:text-3xl text-white">
-                      Message Sent to pramodsshetty021@gmail.com!
+                      Message Submitted Successfully!
                     </h3>
                     <p className="text-xs sm:text-sm text-text-muted max-w-md mx-auto leading-relaxed">
-                      Thank you! Your project inquiry has been formatted and dispatched directly to <span className="text-white font-semibold underline decoration-brand-red decoration-2">pramodsshetty021@gmail.com</span>.
+                      Thank you! Your inquiry has been submitted successfully and our team will get back to you shortly.
                     </p>
-
-                    {sheetLogged && (
-                      <div className="pt-2">
-                        <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                          Logged in Google Sheet "Pravibe Website Leads"
-                          {sheetUrl && (
-                            <a
-                              href={sheetUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="underline hover:text-emerald-300 ml-1 inline-flex items-center gap-1"
-                            >
-                              <span>View Sheet</span>
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
-                          )}
-                        </span>
-                      </div>
-                    )}
                   </div>
 
                   {/* Brief Preview Card */}
