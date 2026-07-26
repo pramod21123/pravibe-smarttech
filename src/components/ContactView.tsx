@@ -405,66 +405,6 @@ export default function ContactView({ setActivePage }: ContactViewProps) {
                     </div>
                   )}
 
-                  {/* Direct Action Buttons */}
-                  <div className="space-y-4">
-                    <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-brand-red text-center">
-                      Direct Communication Channels
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* Email Button directly to pramodsshetty021@gmail.com */}
-                      <a
-                        href={lastSubmittedData ? (() => {
-                          const subject = `New Campaign Brief from ${lastSubmittedData.name} - Pravibe Smarttech`;
-                          const body = `Hi Pramod,
-
-Here are the details for my project brief:
-
-Name: ${lastSubmittedData.name}
-Email: ${lastSubmittedData.email}
-Phone: ${lastSubmittedData.phone || 'N/A'}
-Company: ${lastSubmittedData.company || 'N/A'}
-Service: ${lastSubmittedData.service}
-
-Message:
-${lastSubmittedData.message}
-
-Best regards,
-${lastSubmittedData.name}`;
-                          return `mailto:pramodsshetty021@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                        })() : "mailto:pramodsshetty021@gmail.com"}
-                        className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-brand-red to-orange-500 hover:opacity-95 text-white font-bold text-xs shadow-lg shadow-brand-red/20 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
-                      >
-                        <Mail className="h-4 w-4 shrink-0" />
-                        Send via Email (pramodsshetty021@gmail.com)
-                        <ExternalLink className="h-3 w-3 opacity-80" />
-                      </a>
-
-                      {/* WhatsApp Button */}
-                      <a
-                        href={lastSubmittedData ? (() => {
-                          const msg = `*New Campaign Brief from Pravibe Website*
-
-*Name:* ${lastSubmittedData.name}
-*Email:* ${lastSubmittedData.email}
-*Phone:* ${lastSubmittedData.phone || 'N/A'}
-*Company:* ${lastSubmittedData.company || 'N/A'}
-*Service:* ${lastSubmittedData.service}
-
-*Message:*
-${lastSubmittedData.message}`;
-                          return `https://wa.me/918970382380?text=${encodeURIComponent(msg)}`;
-                        })() : "https://wa.me/918970382380"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20BA56] text-black font-bold text-xs shadow-lg shadow-emerald-500/15 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
-                      >
-                        <MessageSquare className="h-4 w-4 shrink-0" />
-                        Send via WhatsApp
-                        <ExternalLink className="h-3 w-3 opacity-80" />
-                      </a>
-                    </div>
-                  </div>
-
                   <div className="pt-2">
                     <button
                       onClick={() => setIsSubmitted(false)}
