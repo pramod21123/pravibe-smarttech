@@ -58,12 +58,12 @@ function AppContent() {
 
   // SEO: Update HTML Meta Title and Description on View changes
   useEffect(() => {
-    let title = 'Pravibe Smarttech | AI-First Creative Studio Bengaluru';
+    let title = 'AI Video Production & Meta Ads Agency | Pravibe Smarttech';
     let description = 'High-fidelity video production, Meta lead ads, and WhatsApp CRM automations for real estate, FMCG, and agribusinesses in Jayanagar, Bengaluru.';
 
     switch (activePage) {
       case 'home':
-        title = 'Pravibe Smarttech | AI-First Creative Studio Jayanagar';
+        title = 'AI Video Production & Meta Ads Agency | Pravibe Smarttech';
         description = 'High-fidelity video production, Meta lead ads, and WhatsApp CRM automations for real estate, FMCG, and agribusinesses in Jayanagar, Bengaluru.';
         break;
       case 'services':
@@ -87,7 +87,7 @@ function AppContent() {
         description = 'Custom AI agents trained on your business knowledge to resolve front-line inquiries and book appointments 24/7.';
         break;
       case 'service-brand-design':
-        title = 'Brand & Promo Design Studio | Pravibe Smarttech';
+        title = 'Brand & Promo Design | Pravibe Smarttech';
         description = 'Scroll-stopping digital brand identities, packaging concepts, and collateral optimized specifically for mobile screens.';
         break;
       case 'service-social-media':
@@ -115,8 +115,8 @@ function AppContent() {
         description = 'Read our findings on prompt-to-film pipelines, real estate launch film retention, agricultural video conversions, and instant lead reply automations.';
         break;
       case 'about':
-        title = 'About Our Founder & Studio | Pravibe Smarttech';
-        description = "Built by people who'd rather ship than pitch. Discover Pramod Shetty's story, values, and our Jayanagar studio structure.";
+        title = 'About Pravibe Smarttech | AI Video & Meta Ads Agency';
+        description = "Built by people who'd rather ship than pitch. Discover Pramod Shetty's story, values, and how the team is structured.";
         break;
       case 'contact':
         title = 'Get a Free Demo Video | Contact Pravibe Smarttech';
@@ -147,6 +147,7 @@ function AppContent() {
       script.innerHTML = JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'ProfessionalService',
+        '@id': 'https://pravibesmarttech.com/#localbusiness',
         'name': 'Pravibe Smarttech',
         'description': description,
         'image': 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80',
