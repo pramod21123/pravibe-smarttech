@@ -163,9 +163,16 @@ export default function Footer({ setActivePage }: FooterProps) {
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-gradient-to-br from-brand-red to-orange-500 text-white shadow">
-              <Sparkles className="h-4.5 w-4.5" />
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-center h-8 w-8 rounded-lg overflow-hidden bg-brand-red/10 border border-brand-red/20 text-white shadow">
+              <img 
+                src="/logo.png" 
+                alt="Pravibe Smarttech Logo" 
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "https://lh3.googleusercontent.com/d/1Zw4eqVXji9HoJNQ7e0pt_gye_vdtU5Ns";
+                }}
+              />
             </div>
             <div className="flex items-baseline gap-1.5">
               <span className="font-display font-bold text-lg text-white">

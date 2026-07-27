@@ -188,13 +188,13 @@ function AppContent() {
   }, [activePage]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0B0E1A] text-white overflow-x-hidden antialiased">
+    <div className="min-h-screen flex flex-col bg-[#0B0E1A] text-white antialiased">
       <ScrollToTop />
       {/* Universal header layout */}
       <Header activePage={activePage} setActivePage={handlePageChange} />
 
       {/* Main interactive SPA stage */}
-      <main className="flex-grow w-full relative">
+      <main className="flex-grow w-full relative overflow-x-clip">
         <div className="w-full">
           <Routes>
             <Route path="/" element={<HomeView setActivePage={handlePageChange} />} />

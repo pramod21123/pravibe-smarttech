@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Menu, X, ChevronDown, Sparkles } from 'lucide-react';
+import { Menu, X, ChevronDown, Sparkles, ChevronRight, Home as HomeIcon } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ActivePage } from '../types';
 import { getActivePageFromPath, getPagePath } from '../utils/routes';
@@ -8,6 +8,58 @@ import { getActivePageFromPath, getPagePath } from '../utils/routes';
 interface HeaderProps {
   activePage?: ActivePage;
   setActivePage?: (page: ActivePage) => void;
+}
+
+function getBreadcrumbs(page: ActivePage): { label: string; page: ActivePage }[] {
+  if (page === 'home') {
+    return [];
+  }
+  if (page === 'services') {
+    return [{ label: 'Services Overview', page: 'services' }];
+  }
+  if (page.startsWith('service-')) {
+    const serviceMap: Record<string, string> = {
+      'service-ai-video': 'AI Video & Films',
+      'service-meta-ads': 'Meta Ads & Leads',
+      'service-whatsapp-crm': 'WhatsApp CRM',
+      'service-ai-agents': 'AI Intelligent Agents',
+      'service-brand-design': 'Brand & Promo Design',
+      'service-social-media': 'Social Media Management',
+      'service-website-development': 'Website Development',
+    };
+    const title = serviceMap[page] || page.replace('service-', '').replace(/-/g, ' ');
+    return [
+      { label: 'Services', page: 'services' },
+      { label: title, page },
+    ];
+  }
+  if (page === 'blog') {
+    return [{ label: 'Blog & Insights', page: 'blog' }];
+  }
+  if (page.startsWith('blog-')) {
+    const blogMap: Record<string, string> = {
+      'blog-prompt-to-film': 'Prompt-to-Film Pipeline',
+      'blog-ai-walkthroughs-prelaunch': 'AI Walkthroughs Pre-Launch',
+      'blog-crop-nutrition-video': 'Crop Nutrition Video',
+      'blog-meta-click-to-whatsapp': 'Meta Click-to-WhatsApp',
+      'blog-shelf-appeal-feed': 'Shelf Appeal on Social Feed',
+      'blog-cost-traditional-vs-ai': 'Cost: Traditional vs AI',
+      'blog-drone-vs-ai-flythroughs': 'Drone vs AI Flythroughs',
+      'blog-real-estate-launch-film-length': 'Real Estate Launch Film Length',
+    };
+    const title = blogMap[page] || page.replace('blog-', '').replace(/-/g, ' ');
+    return [
+      { label: 'Blog', page: 'blog' },
+      { label: title, page },
+    ];
+  }
+  if (page === 'about') {
+    return [{ label: 'About Us', page: 'about' }];
+  }
+  if (page === 'contact') {
+    return [{ label: 'Contact Us', page: 'contact' }];
+  }
+  return [];
 }
 
 export default function Header({ activePage: propActivePage, setActivePage }: HeaderProps) {
@@ -55,7 +107,7 @@ export default function Header({ activePage: propActivePage, setActivePage }: He
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full transition-all duration-300 bg-[#0B0E1A]/85 backdrop-blur-xl border-b border-white/10 shadow-xl">
+    <header className="sticky top-0 z-50 w-full transition-all duration-200 bg-[#0B0E1A]/95 backdrop-blur-md border-b border-white/10 shadow-2xl">
       {/* Main Navigation */}
       <nav
         className={`w-full transition-all duration-300 ${
@@ -67,11 +119,18 @@ export default function Header({ activePage: propActivePage, setActivePage }: He
           {/* Logo */}
           <button
             onClick={() => navigateTo('home')}
-            className="flex items-center gap-2 group cursor-pointer focus-ring-custom rounded-md"
+            className="flex items-center gap-2.5 group cursor-pointer focus-ring-custom rounded-md"
             id="nav-logo"
           >
-            <div className="relative flex items-center justify-center h-10 w-10 rounded-lg bg-gradient-to-br from-brand-red to-orange-500 text-white shadow-md shadow-brand-red/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="h-5 w-5" />
+            <div className="relative flex items-center justify-center h-10 w-10 rounded-lg overflow-hidden bg-brand-red/10 border border-brand-red/20 text-white shadow-md shadow-brand-red/20 group-hover:scale-105 transition-transform">
+              <img 
+                src="/logo.png" 
+                alt="Pravibe Smarttech Logo" 
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "https://lh3.googleusercontent.com/d/1Zw4eqVXji9HoJNQ7e0pt_gye_vdtU5Ns";
+                }}
+              />
             </div>
             <div className="text-left whitespace-nowrap flex items-baseline gap-1.5 overflow-hidden">
               <motion.span 
@@ -334,6 +393,44 @@ export default function Header({ activePage: propActivePage, setActivePage }: He
           </div>
         )}
       </nav>
+
+      {/* Sticky Breadcrumb Bar */}
+      <div className="w-full bg-[#060812]/90 border-t border-white/5 py-1.5 px-4 shadow-inner">
+        <div className="max-w-7xl mx-auto flex items-center gap-2 text-[11px] font-mono text-text-muted overflow-x-auto no-scrollbar whitespace-nowrap">
+          <button
+            onClick={() => navigateTo('home')}
+            className={`flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer shrink-0 ${
+              activePage === 'home' ? 'text-white font-bold' : ''
+            }`}
+            id="sticky-breadcrumb-home"
+            title="Go to Home"
+          >
+            <HomeIcon className="w-3.5 h-3.5 text-brand-red shrink-0" />
+            <span>Home</span>
+          </button>
+
+          {getBreadcrumbs(activePage).map((crumb, idx, arr) => {
+            const isLast = idx === arr.length - 1;
+            return (
+              <React.Fragment key={crumb.page + idx}>
+                <ChevronRight className="w-3 h-3 text-white/30 shrink-0" />
+                {isLast ? (
+                  <span className="text-white font-semibold capitalize truncate max-w-[200px] sm:max-w-xs shrink-0">
+                    {crumb.label}
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => navigateTo(crumb.page)}
+                    className="hover:text-white transition-colors cursor-pointer capitalize shrink-0"
+                  >
+                    {crumb.label}
+                  </button>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
     </header>
   );
 }
